@@ -77,6 +77,24 @@ package org.myjerry.as3extensions.web {
 		}
 		
 		/**
+		 * Just do the job.
+		 */
+		public function executeGET(callbackData:Object = null):void {
+			this._callbackData = callbackData;
+			this._isHEADRequest = false;
+			
+			var request:URLRequest = new URLRequest(this._url);
+			var stream:URLStream = new URLStream();
+			
+			stream.addEventListener(ProgressEvent.PROGRESS, onDownloadProgress);
+			stream.addEventListener(Event.COMPLETE, onDownloadComplete);
+			stream.addEventListener(IOErrorEvent.IO_ERROR, onDownloadError);
+			stream.addEventListener(SecurityErrorEvent.SECURITY_ERROR, onDownloadError);
+			
+			stream.load(request);
+		}
+		
+		/**
 		 * Event listener for HTTP response event
 		 */
 		private function onResponseStatusHandler(event:HTTPStatusEvent):void {
