@@ -26,40 +26,39 @@ package org.myjerry.as3extensions.web {
 	import flash.events.IOErrorEvent;
 	import flash.events.ProgressEvent;
 	import flash.events.SecurityErrorEvent;
-	import flash.net.URLLoader;
 	import flash.net.URLRequest;
 	import flash.net.URLRequestMethod;
 	import flash.net.URLStream;
 	
-	
-	public class URLService {
-		
-		private var _url:String = null;
-		
-		private var _completionHandler:Function = null;
-		
-		private var _errorHandler:Function = null;
-		
-		private var _progressHandler:Function = null;
-		
-		/**
-		 * Internal handle for data that needs to be passed to different handlers.
-		 */
-		private var _callbackData:Object = null;
+	/**
+	 * 
+	 */
+	public class URLService extends BaseService {
 		
 		/**
 		 * Tracks whether the made call is a HEAD request or not.
+		 * 
+		 * @private
 		 */
 		private var _isHEADRequest:Boolean = false;
 		
-		public function URLService(url:String, completionHandler:Function, errorHandler:Function = null) {
-			super();
-			
-			this._url = url;
-			this._completionHandler = completionHandler;
-			this._errorHandler = errorHandler;
+		/**
+		 * Construct the object of a URL service with the supplied parameters.
+		 * 
+		 * @param url the HTTP URL to hit
+		 * 
+		 * @param completionHandler handler function that needs to be invoked when the call succeeds
+		 * 
+		 * @param errorHandler handler function that needs to be invoked if the call fails due to any reason
+		 * 
+		 */
+		public function URLService(url:String, completionHandler:Function, errorHandler:Function = null, progressHandler:Function = null) {
+			super(url, completionHandler, errorHandler, progressHandler);
 		}
 		
+		/**
+		 * 
+		 */
 		public function executeHEAD(callbackData:Object = null, followRedirects:Boolean = true):void {
 			this._callbackData = callbackData;
 			this._isHEADRequest = true;
@@ -67,104 +66,61 @@ package org.myjerry.as3extensions.web {
 			var request:URLRequest = new URLRequest(this._url);
 			request.followRedirects = followRedirects;
 			
-			var stream:URLStream = new URLStream();
-
-			stream.removeEventListener(Event.COMPLETE, onDownloadComplete);
-			stream.addEventListener(HTTPStatusEvent.HTTP_RESPONSE_STATUS, onResponseStatusHandler);
-			stream.addEventListener(IOErrorEvent.IO_ERROR, onDownloadError);
-			stream.addEventListener(SecurityErrorEvent.SECURITY_ERROR, onDownloadError);
-			
-			stream.load(request);
+			fireRequest(request, callbackData);
 		}
 		
 		/**
 		 * Just do the job.
 		 */
 		public function executeGET(callbackData:Object = null):void {
-			this._callbackData = callbackData;
 			this._isHEADRequest = false;
 			
 			var request:URLRequest = new URLRequest(this._url);
-			var stream:URLStream = new URLStream();
 			
-			stream.addEventListener(ProgressEvent.PROGRESS, onDownloadProgress);
-			stream.addEventListener(Event.COMPLETE, onDownloadComplete);
-			stream.addEventListener(IOErrorEvent.IO_ERROR, onDownloadError);
-			stream.addEventListener(SecurityErrorEvent.SECURITY_ERROR, onDownloadError);
-			
-			stream.load(request);
+			fireRequest(request, callbackData);
 		}
 		
+		/**
+		 * Fire a POST request with the given data body, the content type and the call back data.
+		 * 
+		 * @param postData data that needs to be sent to the HTTP service
+		 * 
+		 * @param contentType the value that needs to be sent as the <code>Content-Type</code> request header
+		 * 
+		 * @param callbackData call back data that needs to be supplied between this method's invocation
+		 * and the invocation of one of the success/error handlers.
+		 */
 		public function executePOST(postData:Object, contentType:String, callbackData:Object = null):void {
-			this._callbackData = callbackData;
 			this._isHEADRequest = false;
 			
 			var request:URLRequest = new URLRequest(this._url);
 			request.method = URLRequestMethod.POST;
 			request.contentType = contentType;
 			request.data = postData;
-			
-			var stream:URLStream = new URLStream();
-			
-			stream.addEventListener(ProgressEvent.PROGRESS, onDownloadProgress);
-			stream.addEventListener(Event.COMPLETE, onDownloadComplete);
-			stream.addEventListener(IOErrorEvent.IO_ERROR, onDownloadError);
-			stream.addEventListener(SecurityErrorEvent.SECURITY_ERROR, onDownloadError);
-			
-			stream.load(request);
+
+			fireRequest(request, callbackData);
 		}
 		
 		/**
 		 * Event listener for HTTP response event
+		 * 
+		 * @private
 		 */
-		private function onResponseStatusHandler(event:HTTPStatusEvent):void {
+		override protected function onResponseStatusHandler(event:HTTPStatusEvent):void {
 			if(_isHEADRequest) {
 				var statusCode:int = event.status;
 				var headers:Array = event.responseHeaders;
 				
-				this._completionHandler(statusCode, headers, this._callbackData);
+				var func:Function = this._completionHandler;
+				
+				// clean up for GC
+				this._completionHandler = null;
+				this._errorHandler = null;
+				this._progressHandler = null;
+				
+				func(statusCode, headers, this._callbackData);
 			}
 		}
 		
-		/**
-		 * Event listener for progress events.
-		 */
-		private function onDownloadProgress(event:ProgressEvent):void {
-			if(this._progressHandler != null) {
-				this._progressHandler(event, this._callbackData);
-			}
-		}
-		
-		/**
-		 * Event listener for download complete event.
-		 */
-		private function onDownloadComplete(event:Event):void {
-			var stream:URLStream = event.target as URLStream;
-			var data:String = stream.readUTFBytes(stream.bytesAvailable);
-			
-			stream.removeEventListener(ProgressEvent.PROGRESS, onDownloadProgress);
-			stream.removeEventListener(Event.COMPLETE, onDownloadComplete);
-			stream.removeEventListener(IOErrorEvent.IO_ERROR, onDownloadError);
-			stream.removeEventListener(SecurityErrorEvent.SECURITY_ERROR, onDownloadError);
-			
-			// completion handler will never be NULL
-			this._completionHandler(data, this._callbackData);
-		}
-		
-		/**
-		 * Event listener for download error event.
-		 */
-		private function onDownloadError(event:Event):void {
-			var stream:URLStream = event.target as URLStream;
-			
-			stream.removeEventListener(ProgressEvent.PROGRESS, onDownloadProgress);
-			stream.removeEventListener(Event.COMPLETE, onDownloadComplete);
-			stream.removeEventListener(IOErrorEvent.IO_ERROR, onDownloadError);
-			stream.removeEventListener(SecurityErrorEvent.SECURITY_ERROR, onDownloadError);
-			
-			if(this._errorHandler != null) {
-				this._errorHandler(event, this._callbackData);
-			}
-		}
 	}
 }
