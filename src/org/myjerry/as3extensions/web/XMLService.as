@@ -30,7 +30,7 @@ package org.myjerry.as3extensions.web {
 	
 	/**
 	 * Convenience wrapper to hit a given URL and return the response as an XML.
-	 * The service is hit using a <code>URLStream</code> rather than an <code>HTTPService<code>
+	 * The service is hit using a <code>URLStream</code> rather than an <code>HTTPService</code>
 	 * to handle response size more than a few MBs. 
 	 * 
 	 * @author Sandeep Gupta
