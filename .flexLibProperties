@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<flexLibProperties includeAllClasses="true" useMultiPlatformConfig="false" version="3">
+  <includeClasses>
+    <classEntry path="org.myjerry.as3extensions.IOrdered"/>
+    <classEntry path="org.myjerry.as3extensions.INamed"/>
+    <classEntry path="org.myjerry.as3extensions.IDisposable"/>
+    <classEntry path="org.myjerry.as3extensions.IComparable"/>
+    <classEntry path="org.myjerry.as3extensions.ICloneable"/>
+    <classEntry path="org.myjerry.as3extensions.web.URLService"/>
+    <classEntry path="org.myjerry.as3extensions.web.BaseService"/>
+    <classEntry path="org.myjerry.as3extensions.web.UriBuilder"/>
+    <classEntry path="org.myjerry.as3extensions.model.StringKeyValuePair"/>
+    <classEntry path="org.myjerry.as3extensions.model.KeyValuePair"/>
+  </includeClasses>
+  <includeResources/>
+  <namespaceManifests/>
+</flexLibProperties>
