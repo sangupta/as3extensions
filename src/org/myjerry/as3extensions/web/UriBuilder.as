@@ -23,6 +23,12 @@ package org.myjerry.as3extensions.web {
 	
 	import org.myjerry.as3extensions.model.StringKeyValuePair;
 	
+	/**
+	 * Helper class for building and manipulating URLs.
+	 * 
+	 * Use <code>fromUri()</code> to convert an exisitng URL into a builder object.
+	 * 
+	 */
 	public class UriBuilder {
 		
 		public function UriBuilder() {
@@ -142,6 +148,55 @@ package org.myjerry.as3extensions.web {
 		}
 		
 		public function setEncodedFragment(fragment:String):UriBuilder {
+			return this;
+		}
+		
+		/**
+		 * Set the path to the provided value
+		 */
+		public function setPath(path:String):UriBuilder {
+			return this;
+		}
+		
+		/**
+		 * Set the path to the provided (already) encoded value
+		 */
+		public function setEncodedPath(path:String):UriBuilder {
+			return this;
+		}
+		
+		/**
+		 * Encodes the given segment and appends it to the path
+		 */
+		public function appendPath(segment:String):UriBuilder {
+			return this;
+		}
+		
+		/**
+		 * Appends the (already) encoded segment to the path
+		 */
+		public function appendEncodedPath(segment:String):UriBuilder {
+			return this;
+		}
+		
+		/**
+		 * Set the query parameters from the given string.
+		 */
+		public function setQuery(query:String):UriBuilder {
+			return this;
+		}
+		
+		/**
+		 * Adds/replaces the query parameter defined by the key with the provided value encoding alongside.
+		 */
+		public function setQueryParameter(key:String, value:String):UriBuilder {
+			return this;
+		}
+		
+		/**
+		 * Adds/replaces the query parameter defined by the key with the provided (already) encoded value
+		 */
+		public function setEncodedQueryParameter(key:String, value:String):UriBuilder {
 			return this;
 		}
 		
