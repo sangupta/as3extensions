@@ -155,6 +155,7 @@ package org.myjerry.as3extensions.web {
 		 * Set the path to the provided value
 		 */
 		public function setPath(path:String):UriBuilder {
+			this._path = encodeURIComponent(path);
 			return this;
 		}
 		
@@ -162,6 +163,7 @@ package org.myjerry.as3extensions.web {
 		 * Set the path to the provided (already) encoded value
 		 */
 		public function setEncodedPath(path:String):UriBuilder {
+			this._path = path;
 			return this;
 		}
 		
