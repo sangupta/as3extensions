@@ -22,6 +22,8 @@
 package org.myjerry.as3extensions.web {
 	
 	import org.myjerry.as3extensions.model.StringKeyValuePair;
+	import org.myjerry.as3utils.AssertUtils;
+	import org.myjerry.as3utils.StringUtils;
 	
 	/**
 	 * Helper class for building and manipulating URLs.
@@ -147,7 +149,13 @@ package org.myjerry.as3extensions.web {
 			return this;
 		}
 		
+		public function setFragment(fragment:String):UriBuilder {
+			this._fragment = encodeURI(fragment);
+			return this;
+		}
+		
 		public function setEncodedFragment(fragment:String):UriBuilder {
+			this._fragment = encodeURIComponent(fragment);
 			return this;
 		}
 		
@@ -171,6 +179,15 @@ package org.myjerry.as3extensions.web {
 		 * Encodes the given segment and appends it to the path
 		 */
 		public function appendPath(segment:String):UriBuilder {
+			if(AssertUtils.isEmptyString(segment)) {
+				return this;
+			}
+			
+			if(!StringUtils.endsWith(path, '/') && !StringUtils.startsWith(segment, '/')) {
+				segment += '/';
+			}
+			
+			this._path += encodeURIComponent(segment);
 			return this;
 		}
 		
@@ -178,6 +195,15 @@ package org.myjerry.as3extensions.web {
 		 * Appends the (already) encoded segment to the path
 		 */
 		public function appendEncodedPath(segment:String):UriBuilder {
+			if(AssertUtils.isEmptyString(segment)) {
+				return this;
+			}
+			
+			if(!StringUtils.endsWith(path, '/') && !StringUtils.startsWith(segment, '/')) {
+				segment += '/';
+			}
+			
+			this._path += segment;
 			return this;
 		}
 		
@@ -208,5 +234,53 @@ package org.myjerry.as3extensions.web {
 		public function toString():String {
 			return null;
 		}
+		
+		/**
+		 * Test if the given instance of <code>UriBuiler</code> represents exactly the same URI or not.
+		 * 
+		 * @param other an instance of <code>UriBuilder</code> to be tested against
+		 * 
+		 * @return <code>true</code> if both this instance and the given instance represent exactly the same
+		 * URI, <code>false</code> otherwise
+		 */
+		public function equals(other:UriBuilder):Boolean {
+			if(other == null) {
+				return false;
+			}
+			
+			if(this === other) {
+				return true;
+			}
+			
+			return false;
+		}
+		
+		/**
+		 * Test if the given URI is the same as the URI represented by this <code>UriBuilder</code> object.
+		 */
+		public function equalsUri(uri:String):Boolean {
+			if(uri == null) {
+				return false;
+			}
+			
+			var other:UriBuilder = UriBuilder.fromUri(uri);
+			
+			return this.equals(other);
+		}
+
+		/**
+		 * Obtain a <code>UriBuilder</code> object from the given URI represented as a <code>String</code>
+		 * 
+		 * @return returns a new <code>UriBuilder</code> object instance which can be used to build upon
+		 * a URI. This method never returns a <code>null</code>
+		 */
+		public static function fromUri(uri:String):UriBuilder {
+			if(AssertUtils.isEmptyString(uri)) {
+				return null;
+			}
+			
+			return null; 
+		}
+		
 	}
 }
