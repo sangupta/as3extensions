@@ -22,16 +22,14 @@
 package org.myjerry.as3extensions.db {
 	
 	import flash.data.SQLConnection;
+	import flash.data.SQLMode;
 	import flash.data.SQLResult;
 	import flash.data.SQLStatement;
+	import flash.filesystem.File;
 	import flash.net.Responder;
-	
-	import mx.logging.ILogger;
-	import mx.logging.Log;
 	
 	import org.myjerry.as3extensions.IDisposable;
 	import org.myjerry.as3utils.AssertUtils;
-	import org.myjerry.as3utils.StringUtils;
 	
 	
 	public class Database implements IDisposable {
@@ -43,6 +41,18 @@ package org.myjerry.as3extensions.db {
 		
 		public function Database() {
 			super();
+			
+			initialize();
+		}
+		
+		public function initialize():void {
+			throw new Error('Must be implemented in a child class.');
+		}
+		
+		protected static function initializeFromFile(file:File, openMode:String = SQLMode.CREATE):SQLConnection {
+			var dbConnection:SQLConnection = new SQLConnection();
+			dbConnection.open(file, openMode);
+			return dbConnection;
 		}
 		
 		/**
