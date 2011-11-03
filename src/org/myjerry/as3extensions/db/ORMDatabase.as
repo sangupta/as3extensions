@@ -1,3 +1,24 @@
+/**
+ *
+ * as3extensions - ActionScript Extension Classes
+ * Copyright (C) 2011, myJerry Developers
+ * http://www.myjerry.org/as3extensions
+ *
+ * The file is licensed under the the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ */
+
 package org.myjerry.as3extensions.db {
 	
 	import flash.data.SQLStatement;
@@ -127,28 +148,35 @@ package org.myjerry.as3extensions.db {
 		}
 		
 		private function loadMetadata(c:Class):void {
-			var object:Object = new Object();
+			var object:ORMMetadataObject = new ORMMetadataObject();
 			map[c] = object;
 			
 			var xml:XML = describeType(new c());
 			
-			var table:String = xml.metadata.(@name=="Table").arg.(@key=="name").@value;
+			const tableName:String = xml.metadata.(@name=="Table").arg.(@key=="name").@value;
 			
-			object.table = table;
-			object.fields = new ArrayCollection();
-			var variables:XMLList = xml.accessor;
+			object.table = tableName;
+			
+			
+			var variables:XMLList = null;
+			
+			variables = xml.variable;
+			if(variables.length() == 0) {
+				// check if object is bindable
+				variables = xml.accessor;
+			}
 			
 			var insertParams:String = "";
-			var updateSQL:String = "UPDATE " + table + " SET ";
-			var insertSQL:String = "INSERT INTO " + table + " (";
-			var createSQL:String = "CREATE TABLE IF NOT EXISTS " + table + " (";
+			var updateSQL:String = "UPDATE " + tableName + " SET ";
+			var insertSQL:String = "INSERT INTO " + tableName + " (";
+			var createSQL:String = "CREATE TABLE IF NOT EXISTS " + tableName + " (";
 			
 			for (var i:int = 0 ; i < variables.length() ; i++) {
 				var field:String = variables[i].@name.toString();
 				var column:String;
 				
 				// check if the variable is not transient
-				if(variables[i].metadata.(@name=="Transient") != null) {
+				if(variables[i].metadata.(@name=="Transient").length() > 0) {
 					// no need to keep this variable
 					continue;
 				}
@@ -180,74 +208,73 @@ package org.myjerry.as3extensions.db {
 			updateSQL = updateSQL.substring(0, updateSQL.length-1);
 			updateSQL += " WHERE " + object.identity.column + "=:" + object.identity.field;
 			
-			var deleteSQL:String = "DELETE FROM " + table + " WHERE " + object.identity.column + "=:" + object.identity.field;
+			const deleteSQL:String = "DELETE FROM " + tableName + " WHERE " + object.identity.column + "=:" + object.identity.field;
+			const findSQL:String = "SELECT * FROM " + tableName + " WHERE " + object.identity.column + "=:" + object.identity.field;
 			
-			var findSQL:String = "SELECT * FROM " + table + " WHERE " + object.identity.column + "=:" + object.identity.field;
+			object.insertStmt = getStatement(insertSQL);
+			object.updateStmt = getStatement(updateSQL);
+			object.deleteStmt = getStatement(deleteSQL);
+			object.findStmt = getStatement(findSQL);
+			object.findAllStmt = getStatement("SELECT * FROM " + tableName);
 			
-			var stmt:SQLStatement = new SQLStatement();
-			stmt.sqlConnection = this.dbConnection;
-			stmt.text = insertSQL;
-			object.insertStmt = stmt;
-			
-			stmt = new SQLStatement();
-			stmt.sqlConnection = this.dbConnection;
-			stmt.text = updateSQL;
-			object.updateStmt = stmt;
-			
-			stmt = new SQLStatement();
-			stmt.sqlConnection = this.dbConnection;
-			stmt.text = deleteSQL;
-			object.deleteStmt = stmt;
-			
-			stmt = new SQLStatement();
-			stmt.sqlConnection = this.dbConnection;
-			stmt.text = findSQL;
-			object.findStmt = stmt;
-				
-			stmt = new SQLStatement();
-			stmt.sqlConnection = this.dbConnection;
-			stmt.text = "SELECT * FROM " + table;
-			object.findAllStmt = stmt;
-			
-			stmt = new SQLStatement();
-			stmt.sqlConnection = this.dbConnection;
-			stmt.text = createSQL;
-			stmt.execute();
-			
+			// create the table if needed
+			executeSQLQuery(createSQL);
 		}
 		
 		private function typeArray(a:Array, c:Class):ArrayList {
-			if (a==null) return null;
 			var ac:ArrayList = new ArrayList();
-			for (var i:int = 0; i < a.length; i++) {
-				ac.addItem(typeObject(a[i],c));
+			
+			if (a != null) { 
+				for (var i:int = 0; i < a.length; i++) {
+					ac.addItem(typeObject(a[i],c));
+				}
 			}
 			
 			return ac;			
 		}
 		
-		private function typeObject(o:Object,c:Class):Object
-		{
+		private function typeObject(o:Object,c:Class):Object {
 			var instance:Object = new c();
 			var fields:ArrayCollection = map[c].fields;
 			
-			for (var i:int; i<fields.length; i++)
-			{
+			for (var i:int; i<fields.length; i++) {
 				var item:Object = fields.getItemAt(i);
 				instance[item.field] = o[item.column];	
 			}
+			
 			return instance;
 		}
 		
-		private function getSQLType(asType:String):String
-		{
-			if (asType == "int" || asType == "uint")
+		private function getSQLType(asType:String):String {
+			if (asType == "int" || asType == "uint") {
 				return "INTEGER";
-			else if (asType == "Number")
+			}
+			
+			if (asType == "Number") {
 				return "REAL";
-			else
-				return "TEXT";				
+			}
+			
+			return "TEXT";				
 		}
 	}
 }
 
+import flash.data.SQLStatement;
+
+import mx.collections.ArrayCollection;
+
+class ORMMetadataObject{
+	
+	public var table:String;
+	
+	public var fields:ArrayCollection = new ArrayCollection();
+	
+	public var identity:Object;
+	
+	public var insertStmt:SQLStatement;
+	public var updateStmt:SQLStatement;
+	public var deleteStmt:SQLStatement;
+	public var findStmt:SQLStatement;
+	public var findAllStmt:SQLStatement;
+	
+}
