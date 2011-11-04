@@ -21,6 +21,7 @@
 
 package org.myjerry.as3extensions.db {
 	
+	import flash.data.SQLResult;
 	import flash.data.SQLStatement;
 	import flash.utils.describeType;
 	import flash.utils.getDefinitionByName;
@@ -33,8 +34,12 @@ package org.myjerry.as3extensions.db {
 	
 	public class ORMDatabase extends Database {
 		
-		public function ORMDatabase() {
+		private var createTables:Boolean = true;
+		
+		public function ORMDatabase(createTables:Boolean = true) {
 			super();
+			
+			this.createTables = createTables;
 		}
 		
 		/**
@@ -59,8 +64,7 @@ package org.myjerry.as3extensions.db {
 			return typeArray(result,clazz);
 		}
 		
-		public function save(o:Object):void
-		{
+		public function save(o:Object):void {
 			var c:Class = Class(getDefinitionByName(getQualifiedClassName(o)));
 			// If not yet done, load the metadata for this class
 			if (!map[c]) loadMetadata(c);
@@ -78,16 +82,20 @@ package org.myjerry.as3extensions.db {
 			}
 		}
 		
-		private function updateItem(o:Object, c:Class):void
-		{
+		private function updateItem(o:Object, c:Class):void {
 			var stmt:SQLStatement = map[c].updateStmt;
 			var fields:ArrayCollection = map[c].fields;
-			for (var i:int = 0; i<fields.length; i++)
-			{
+			for (var i:int = 0; i<fields.length; i++) {
 				var field:String = fields.getItemAt(i).field;
 				stmt.parameters[":" + field] = o[field];
 			}
 			stmt.execute();
+			
+			var result:SQLResult = stmt.getResult();
+			if(result.rowsAffected == 0) {
+				// the item was not updated as it does not exists
+				createItem(o, c);
+			}
 		}
 		
 		private function createItem(o:Object, c:Class):void {
@@ -103,7 +111,9 @@ package org.myjerry.as3extensions.db {
 				}
 			}
 			stmt.execute();
-			o[identity.field] = stmt.getResult().lastInsertRowID;
+			
+			var result:SQLResult = stmt.getResult();
+			o[identity.field] = result.lastInsertRowID;
 		}
 		
 		public function remove(o:Object):void {
@@ -140,8 +150,8 @@ package org.myjerry.as3extensions.db {
 			// Return typed objects
 			var result:Array = stmt.getResult().data;
 			
-			if(result.data.length == 1) {
-				return typeObject(result.data[0], clazz);
+			if(result != null && result.length == 1) {
+				return typeObject(result[0], clazz);
 			}
 			
 			return null;
@@ -218,7 +228,9 @@ package org.myjerry.as3extensions.db {
 			object.findAllStmt = getStatement("SELECT * FROM " + tableName);
 			
 			// create the table if needed
-			executeSQLQuery(createSQL);
+			if(this.createTables) {
+				executeSQLQuery(createSQL);
+			}
 		}
 		
 		private function typeArray(a:Array, c:Class):ArrayList {
