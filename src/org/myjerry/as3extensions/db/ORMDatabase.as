@@ -36,10 +36,13 @@ package org.myjerry.as3extensions.db {
 		
 		private var createTables:Boolean = true;
 		
-		public function ORMDatabase(createTables:Boolean = true) {
+		private var showSQL:Boolean = false;
+		
+		public function ORMDatabase(createTables:Boolean = true, showSQL:Boolean = false) {
 			super();
 			
 			this.createTables = createTables;
+			this.showSQL = showSQL;
 		}
 		
 		/**
@@ -58,27 +61,30 @@ package org.myjerry.as3extensions.db {
 			}
 			
 			var stmt:SQLStatement = map[clazz].findAllStmt;
+
+			if(this.showSQL) {
+				trace(stmt.text);
+			}
+			
 			stmt.execute();
 			// Return typed objects
 			var result:Array = stmt.getResult().data;
 			return typeArray(result,clazz);
 		}
 		
-		public function save(o:Object):void {
-			var c:Class = Class(getDefinitionByName(getQualifiedClassName(o)));
+		public function save(object:Object):void {
+			var c:Class = Class(getDefinitionByName(getQualifiedClassName(object)));
 			// If not yet done, load the metadata for this class
 			if (!map[c]) loadMetadata(c);
 			var identity:Object = map[c].identity;
+			
 			// Check if the object has an identity
-			if (o[identity.field]>0)
-			{
+			if (object[identity.field] > 0) {
 				// If yes, we deal with an update
-				updateItem(o,c);
-			}
-			else
-			{
+				updateItem(object, c);
+			} else {
 				// If no, this is a new item
-				createItem(o,c);
+				createItem(object, c);
 			}
 		}
 		
@@ -89,6 +95,11 @@ package org.myjerry.as3extensions.db {
 				var field:String = fields.getItemAt(i).field;
 				stmt.parameters[":" + field] = o[field];
 			}
+			
+			if(this.showSQL) {
+				trace(stmt.text);
+			}
+			
 			stmt.execute();
 			
 			var result:SQLResult = stmt.getResult();
@@ -102,14 +113,18 @@ package org.myjerry.as3extensions.db {
 			var stmt:SQLStatement = map[c].insertStmt;
 			var identity:Object = map[c].identity;
 			var fields:ArrayCollection = map[c].fields;
-			for (var i:int = 0; i<fields.length; i++)
-			{
+			for (var i:int = 0; i<fields.length; i++) {
 				var field:String = fields.getItemAt(i).field;
 				if (field != identity.field)
 				{
 					stmt.parameters[":" + field] = o[field];
 				}
 			}
+			
+			if(this.showSQL) {
+				trace(stmt.text);
+			}
+			
 			stmt.execute();
 			
 			var result:SQLResult = stmt.getResult();
@@ -123,6 +138,11 @@ package org.myjerry.as3extensions.db {
 			var identity:Object = map[c].identity;
 			var stmt:SQLStatement = map[c].deleteStmt;
 			stmt.parameters[":"+identity.field] = o[identity.field];
+			
+			if(this.showSQL) {
+				trace(stmt.text);
+			}
+			
 			stmt.execute();
 		}
 		
@@ -134,6 +154,11 @@ package org.myjerry.as3extensions.db {
 			var identity:Object = map[clazz].identity;
 			var stmt:SQLStatement = map[clazz].deleteStmt;
 			stmt.parameters[":"+identity.field] = id;
+			
+			if(this.showSQL) {
+				trace(stmt.text);
+			}
+			
 			stmt.execute();
 		}
 		
@@ -145,6 +170,11 @@ package org.myjerry.as3extensions.db {
 			var identity:Object = map[clazz].identity;
 			var stmt:SQLStatement = map[clazz].findStmt;
 			stmt.parameters[":" + identity.field] = id;
+			
+			if(this.showSQL) {
+				trace(stmt.text);
+			}
+			
 			stmt.execute();
 			
 			// Return typed objects
@@ -168,19 +198,71 @@ package org.myjerry.as3extensions.db {
 			object.table = tableName;
 			
 			
-			var variables:XMLList = null;
-			
-			variables = xml.variable;
-			if(variables.length() == 0) {
-				// check if object is bindable
-				variables = xml.accessor;
-			}
-			
-			var insertParams:String = "";
 			var updateSQL:String = "UPDATE " + tableName + " SET ";
 			var insertSQL:String = "INSERT INTO " + tableName + " (";
 			var createSQL:String = "CREATE TABLE IF NOT EXISTS " + tableName + " (";
 			
+			var variables:XMLList = null;
+			var vbu:VariableBuildup = new VariableBuildup();
+			
+			vbu.updateSQL = updateSQL;
+			vbu.insertSQL = insertSQL;
+			vbu.createSQL = createSQL;
+
+			// first do for directly accessible variables
+			variables = xml.variable;
+			if(variables.length() > 0) {
+				doForVariables(variables, object, vbu);
+			}
+			
+			// now do for accessors - properties that are bindable
+			variables = xml.accessor;
+			if(variables.length() > 0) {
+				doForVariables(variables, object, vbu);
+			}
+			
+			// set the variables back
+			createSQL = vbu.createSQL;
+			insertSQL = vbu.insertSQL;
+			updateSQL = vbu.updateSQL;
+			var insertParams:String = vbu.insertParams;
+			
+			// start building query statements
+			createSQL = createSQL.substring(0, createSQL.length-1) + ")";
+			
+			insertSQL = insertSQL.substring(0, insertSQL.length-1) + ") VALUES (" + insertParams;
+			insertSQL = insertSQL.substring(0, insertSQL.length-1) + ")";
+			
+			updateSQL = updateSQL.substring(0, updateSQL.length-1);
+			updateSQL += " WHERE " + object.identity.column + "=:" + object.identity.field;
+			
+			const deleteSQL:String = "DELETE FROM " + tableName + " WHERE " + object.identity.column + "=:" + object.identity.field;
+			const findSQL:String = "SELECT * FROM " + tableName + " WHERE " + object.identity.column + "=:" + object.identity.field;
+			
+			if(this.showSQL) {
+				trace('insertSQL: ' + insertSQL);
+				trace('updateSQL: ' + updateSQL);
+				trace('deleteSQL: ' + deleteSQL);
+				trace('findSQL: ' + findSQL);
+			}
+			
+			object.insertStmt = getStatement(insertSQL);
+			object.updateStmt = getStatement(updateSQL);
+			object.deleteStmt = getStatement(deleteSQL);
+			object.findStmt = getStatement(findSQL);
+			object.findAllStmt = getStatement("SELECT * FROM " + tableName);
+			
+			// create the table if needed
+			if(this.createTables) {
+				if(this.showSQL) {
+					trace(createSQL);
+				}
+				
+				executeSQLQuery(createSQL);
+			}
+		}
+		
+		private function doForVariables(variables:XMLList, object:ORMMetadataObject, vbu:VariableBuildup):void {
 			for (var i:int = 0 ; i < variables.length() ; i++) {
 				var field:String = variables[i].@name.toString();
 				var column:String;
@@ -201,35 +283,13 @@ package org.myjerry.as3extensions.db {
 				
 				if (variables[i].metadata.(@name=="Id").length() > 0) {
 					object.identity = {field: field, column: column};
-					createSQL += column + " INTEGER PRIMARY KEY AUTOINCREMENT,";
+					vbu.createSQL += column + " INTEGER PRIMARY KEY AUTOINCREMENT,";
 				} else {
-					insertSQL += column + ",";
-					insertParams += ":" + field + ",";
-					updateSQL += column + "=:" + field + ",";	
-					createSQL += column + " " + getSQLType(variables[i].@type) + ",";
+					vbu.insertSQL += column + ",";
+					vbu.insertParams += ":" + field + ",";
+					vbu.updateSQL += column + "=:" + field + ",";	
+					vbu.createSQL += column + " " + getSQLType(variables[i].@type) + ",";
 				}
-			}
-			
-			createSQL = createSQL.substring(0, createSQL.length-1) + ")";
-			
-			insertSQL = insertSQL.substring(0, insertSQL.length-1) + ") VALUES (" + insertParams;
-			insertSQL = insertSQL.substring(0, insertSQL.length-1) + ")";
-			
-			updateSQL = updateSQL.substring(0, updateSQL.length-1);
-			updateSQL += " WHERE " + object.identity.column + "=:" + object.identity.field;
-			
-			const deleteSQL:String = "DELETE FROM " + tableName + " WHERE " + object.identity.column + "=:" + object.identity.field;
-			const findSQL:String = "SELECT * FROM " + tableName + " WHERE " + object.identity.column + "=:" + object.identity.field;
-			
-			object.insertStmt = getStatement(insertSQL);
-			object.updateStmt = getStatement(updateSQL);
-			object.deleteStmt = getStatement(deleteSQL);
-			object.findStmt = getStatement(findSQL);
-			object.findAllStmt = getStatement("SELECT * FROM " + tableName);
-			
-			// create the table if needed
-			if(this.createTables) {
-				executeSQLQuery(createSQL);
 			}
 		}
 		
@@ -289,4 +349,15 @@ class ORMMetadataObject{
 	public var findStmt:SQLStatement;
 	public var findAllStmt:SQLStatement;
 	
+}
+
+class VariableBuildup {
+	
+	public var createSQL:String = '';
+	
+	public var insertSQL:String = '';
+	
+	public var updateSQL:String = '';
+	
+	public var insertParams:String = '';
 }
