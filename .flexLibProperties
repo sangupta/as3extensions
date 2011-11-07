@@ -11,6 +11,9 @@
     <classEntry path="org.myjerry.as3extensions.web.UriBuilder"/>
     <classEntry path="org.myjerry.as3extensions.model.StringKeyValuePair"/>
     <classEntry path="org.myjerry.as3extensions.model.KeyValuePair"/>
+    <classEntry path="org.myjerry.as3extensions.io.FolderChooser"/>
+    <classEntry path="org.myjerry.as3extensions.io.FileChooser"/>
+    <classEntry path="org.myjerry.as3extensions.html.ExtendedHTML"/>
   </includeClasses>
   <includeResources/>
   <namespaceManifests/>
