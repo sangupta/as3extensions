@@ -1,8 +1,8 @@
 /**
  *
  * as3extensions - ActionScript Extension Classes
- * Copyright (C) 2011, myJerry Developers
- * http://www.myjerry.org/as3extensions
+ * Copyright (C) 2010-2012, Sandeep Gupta
+ * http://www.sangupta.com/projects/as3extensions
  *
  * The file is licensed under the the Apache License, Version 2.0
  * (the "License"); you may not use this file except in compliance with
@@ -19,7 +19,10 @@
  *
  */
 
-package org.myjerry.as3extensions.db {
+package com.sangupta.as3extensions.db {
+	
+	import com.sangupta.as3extensions.IDisposable;
+	import com.sangupta.as3utils.AssertUtils;
 	
 	import flash.data.SQLConnection;
 	import flash.data.SQLMode;
@@ -27,10 +30,6 @@ package org.myjerry.as3extensions.db {
 	import flash.data.SQLStatement;
 	import flash.filesystem.File;
 	import flash.net.Responder;
-	
-	import org.myjerry.as3extensions.IDisposable;
-	import org.myjerry.as3utils.AssertUtils;
-	
 	
 	public class Database implements IDisposable {
 		

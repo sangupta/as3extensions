@@ -1,8 +1,8 @@
 /**
  *
  * as3extensions - ActionScript Extension Classes
- * Copyright (C) 2010-2011, myJerry Developers
- * http://www.myjerry.org/as3extensions
+ * Copyright (C) 2010-2012, Sandeep Gupta
+ * http://www.sangupta.com/projects/as3extensions
  *
  * The file is licensed under the the Apache License, Version 2.0
  * (the "License"); you may not use this file except in compliance with
@@ -19,26 +19,30 @@
  *
  */
 
-package org.myjerry.as3extensions {
+package com.sangupta.as3extensions.html {
 	
-	/**
-	 * Interface enforcing contract that the implementing object provides an
-	 * implementation to be tested for equality.
-	 * 
-	 * @author Sandeep Gupta
-	 * @since 1.0
-	 */
-	public interface IEquals {
+	import mx.controls.HTML;
+
+	public class ExtendedHTML extends HTML {
+		
+		public function ExtendedHTML() {
+			super();
+		}
+		
+		protected var _hasForwardHistory:Boolean;
+		
+		protected var _hasBackwardHistory:Boolean;
 		
 		/**
-		 * Tests whether the provided second object is equal to this object.
-		 * 
-		 * @param object the object to be tested against
-		 * 
-		 * @return <code>true</code> if the objects are equals, <code>false</code>
-		 * otherwise.
+		 * Function that resets the value of the forward history and backward
+		 * history identifiers.
 		 */
-		function equals(other:Object):Boolean;
+		protected function setNavigationHistory():void {
+			
+		}
 		
+		public function getReferrer():String {
+			throw new Error('not yet implemented.');
+		}
 	}
 }

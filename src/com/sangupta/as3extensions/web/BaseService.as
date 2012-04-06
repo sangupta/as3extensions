@@ -1,8 +1,8 @@
 /**
  *
  * as3extensions - ActionScript Extension Classes
- * Copyright (C) 2010-2011, myJerry Developers
- * http://www.myjerry.org/as3extensions
+ * Copyright (C) 2010-2012, Sandeep Gupta
+ * http://www.sangupta.com/projects/as3extensions
  *
  * The file is licensed under the the Apache License, Version 2.0
  * (the "License"); you may not use this file except in compliance with
@@ -19,7 +19,8 @@
  *
  */
 
-package org.myjerry.as3extensions.web {
+package com.sangupta.as3extensions.web {
+	
 	import flash.events.Event;
 	import flash.events.HTTPStatusEvent;
 	import flash.events.IOErrorEvent;

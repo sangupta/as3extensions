@@ -1,8 +1,8 @@
 /**
  *
  * as3extensions - ActionScript Extension Classes
- * Copyright (C) 2010-2011, myJerry Developers
- * http://www.myjerry.org/as3extensions
+ * Copyright (C) 2010-2012, Sandeep Gupta
+ * http://www.sangupta.com/projects/as3extensions
  *
  * The file is licensed under the the Apache License, Version 2.0
  * (the "License"); you may not use this file except in compliance with
@@ -19,17 +19,21 @@
  *
  */
 
-package org.myjerry.as3extensions {
+package com.sangupta.as3extensions {
 	
 	/**
-	 * Interface enforcing contract that the implementing object can be cloned.
-	 * 
+	 * Interface enforcing contract that the implementing object can be ordered
+	 * in a given list of objects. The order of this object can be set and retrieved
+	 * via public methods.
+	 *
 	 * @author Sandeep Gupta
 	 * @since 1.0
 	 */
-	public interface ICloneable {
+	public interface IOrdered {
 		
-		function clone():*;
+		function get order():int;
+		
+		function set order(value:int):void;
 		
 	}
 }

@@ -1,8 +1,8 @@
 /**
  *
  * as3extensions - ActionScript Extension Classes
- * Copyright (C) 2010-2011, myJerry Developers
- * http://www.myjerry.org/as3extensions
+ * Copyright (C) 2010-2012, Sandeep Gupta
+ * http://www.sangupta.com/projects/as3extensions
  *
  * The file is licensed under the the Apache License, Version 2.0
  * (the "License"); you may not use this file except in compliance with
@@ -19,11 +19,10 @@
  *
  */
 
-package org.myjerry.as3extensions.web {
-	
-	import org.myjerry.as3extensions.model.StringKeyValuePair;
-	import org.myjerry.as3utils.AssertUtils;
-	import org.myjerry.as3utils.StringUtils;
+package com.sangupta.as3extensions.web {
+	import com.sangupta.as3extensions.model.StringKeyValuePair;
+	import com.sangupta.as3utils.AssertUtils;
+	import com.sangupta.as3utils.StringUtils;
 	
 	/**
 	 * Helper class for building and manipulating URLs.
