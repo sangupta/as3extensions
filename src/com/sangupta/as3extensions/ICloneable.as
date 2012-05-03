@@ -24,11 +24,16 @@ package com.sangupta.as3extensions {
 	/**
 	 * Interface enforcing contract that the implementing object can be cloned.
 	 * 
-	 * @author Sandeep Gupta
+	 * @author sangupta
 	 * @since 1.0
 	 */
 	public interface ICloneable {
 		
+		/**
+		 * Return a deep clone of the current object.
+		 * 
+		 * @return the deep-cloned object.
+		 */
 		function clone():*;
 		
 	}

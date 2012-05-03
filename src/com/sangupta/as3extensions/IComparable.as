@@ -25,11 +25,19 @@ package com.sangupta.as3extensions {
 	 * Interface enforcing contract that the implementing object can be compared with
 	 * other objects.
 	 * 
-	 * @author Sandeep Gupta
+	 * @author sangupta
 	 * @since 1.0
 	 */
 	public interface IComparable {
 		
+		/**
+		 * Compare the given object to this object.
+		 * 
+		 * @param other the object to be compared to
+		 * 
+		 * @return a negative, zero, or positive integer depending the current object is less than, equal to or
+		 * greater than the given object.
+		 */
 		function compareTo(other:Object):int;
 		
 	}

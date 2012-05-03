@@ -24,6 +24,10 @@ package com.sangupta.as3extensions.io {
 	import flash.events.Event;
 	import flash.filesystem.File;
 
+	/**
+	 * @author sangupta
+	 * @since 1.0
+	 */
 	public class FolderChooser {
 		
 		private var completionFunction:Function = null;

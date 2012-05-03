@@ -25,7 +25,7 @@ package com.sangupta.as3extensions.model {
 	 * A utility holding class for key-value pairs, where both keys
 	 * and values are <code>String</code> objects.
 	 * 
-	 * @author Sandeep Gupta
+	 * @author sangupta
 	 * @since 1.0
 	 */
 	public class StringKeyValuePair	{

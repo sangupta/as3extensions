@@ -31,6 +31,14 @@ package com.sangupta.as3extensions.db {
 	import flash.filesystem.File;
 	import flash.net.Responder;
 	
+	/**
+	 * Abstract class that encapsulate common functionality of a SQLite database providing common
+	 * functionality like executing SQL query, or returning a prepared statement eliminating
+	 * the associated boiler plate code.
+	 * 
+	 * @author sangupta
+	 * @since 1.0
+	 */ 
 	public class Database implements IDisposable {
 		
 		/**
@@ -38,12 +46,19 @@ package com.sangupta.as3extensions.db {
 		 */
 		protected var dbConnection:SQLConnection = null;
 		
+		/**
+		 * Create a new instance of <code>Database</code>
+		 */
 		public function Database() {
 			super();
 			
 			initialize();
 		}
 		
+		/**
+		 * Initialize the given database. This method MUST be implemented in the
+		 * child class.
+		 */
 		public function initialize():void {
 			throw new Error('Must be implemented in a child class.');
 		}

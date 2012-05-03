@@ -21,6 +21,8 @@
 
 package com.sangupta.as3extensions.web {
 	
+	import com.sangupta.as3utils.AssertUtils;
+	
 	import flash.events.Event;
 	import flash.events.IOErrorEvent;
 	import flash.events.ProgressEvent;
@@ -33,7 +35,7 @@ package com.sangupta.as3extensions.web {
 	 * The service is hit using a <code>URLStream</code> rather than an <code>HTTPService</code>
 	 * to handle response size more than a few MBs. 
 	 * 
-	 * @author Sandeep Gupta
+	 * @author sangupta
 	 * @since 1.0
 	 */
 	public class JSONService extends BaseService {
@@ -42,7 +44,9 @@ package com.sangupta.as3extensions.web {
 		 * Contruct a one-time usable object of this service.
 		 * 
 		 * @param url the end-point URL that needs to be invoked.
+		 * 
 		 * @param completionHandler Function that needs to be called when download completes.
+		 * 
 		 * @param errorHandler Function that needs to be called in case of a failure.
 		 */  
 		public function JSONService(url:String, completionHandler:Function, errorHandler:Function = null, progressHandler:Function = null) {
@@ -53,9 +57,11 @@ package com.sangupta.as3extensions.web {
 		 * Generate a JSON object out of the stream data and return that back.
 		 */
 		override protected function massageStreamData(streamData:String):* {
-			// TODO: need to fix this per the implementation
-			// either as3corelib for AIR 3.0- or native one for AIR 3.0+
-			return streamData;
+			if(AssertUtils.isNotEmptyString(streamData)) {
+				return JSON.parse(streamData);
+			}
+			
+			return null;
 		}
 	
 	}

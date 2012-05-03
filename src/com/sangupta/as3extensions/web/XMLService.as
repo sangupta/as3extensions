@@ -33,7 +33,7 @@ package com.sangupta.as3extensions.web {
 	 * The service is hit using a <code>URLStream</code> rather than an <code>HTTPService</code>
 	 * to handle response size more than a few MBs. 
 	 * 
-	 * @author Sandeep Gupta
+	 * @author sangupta
 	 * @since 1.0
 	 */
 	public class XMLService extends BaseService {

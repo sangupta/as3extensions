@@ -26,14 +26,24 @@ package com.sangupta.as3extensions {
 	 * in a given list of objects. The order of this object can be set and retrieved
 	 * via public methods.
 	 *
-	 * @author Sandeep Gupta
+	 * @author sangupta
 	 * @since 1.0
 	 */
 	public interface IOrdered {
 		
-		function get order():int;
+		/**
+		 * Return the current ordering preference of this object.
+		 * 
+		 * @return unsigned integer representing the order of this object
+		 */
+		function get order():uint;
 		
-		function set order(value:int):void;
+		/**
+		 * Set the order of this object to the given value
+		 * 
+		 * @param value an unsigned integer indicating the new order for this object
+		 */
+		function set order(value:uint):void;
 		
 	}
 }

@@ -39,7 +39,8 @@ package com.sangupta.as3extensions.io {
 	 * object, for performance reasons only.
 	 * 
 	 * @author sangupta
-	 * @since Dec 17, 2010
+	 * @since 1.0
+	 * @added Dec 17, 2010
 	 */
 	public class FileStreamWithLineReader extends FileStream {
 		

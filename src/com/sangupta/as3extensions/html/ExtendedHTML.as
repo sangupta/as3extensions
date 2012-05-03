@@ -23,6 +23,10 @@ package com.sangupta.as3extensions.html {
 	
 	import mx.controls.HTML;
 
+	/**
+	 * @author sangupta
+	 * @since 1.0
+	 */
 	public class ExtendedHTML extends HTML {
 		
 		public function ExtendedHTML() {

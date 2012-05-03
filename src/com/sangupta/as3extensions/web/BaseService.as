@@ -29,6 +29,10 @@ package com.sangupta.as3extensions.web {
 	import flash.net.URLRequest;
 	import flash.net.URLStream;
 	
+	/**
+	 * @author sangupta
+	 * @since 1.0
+	 */
 	public class BaseService {
 		
 		/**

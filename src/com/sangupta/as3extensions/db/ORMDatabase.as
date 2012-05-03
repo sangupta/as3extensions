@@ -30,6 +30,14 @@ package com.sangupta.as3extensions.db {
 	import mx.collections.ArrayCollection;
 	import mx.collections.ArrayList;
 	
+	/**
+	 * A basic version of an Object-Relational-Mapping enabled SQLite database
+	 * class that allows a user to persist direct objects into the database rather
+	 * than worrying about creating database tables and all.
+	 * 
+	 * @author sangupta
+	 * @since 1.0
+	 */
 	public class ORMDatabase extends Database {
 		
 		private var createTables:Boolean = true;
@@ -45,10 +53,12 @@ package com.sangupta.as3extensions.db {
 		
 		/**
 		 * Map of metadata information for each class used by the application. The class is used as
-		 * the map key. The information maintained for each class includes:
-		 * table: name of the database table used to persist the object information.
-		 * identity: object that maps the table primary key to the name of the corresponding class field.
-		 * fields: list of objects that map field names of the class to the corresponding database colums.
+		 * the map key. 
+		 * 
+		 * The information maintained for each class includes:
+		 * 		table: name of the database table used to persist the object information.
+		 * 		identity: object that maps the table primary key to the name of the corresponding class field.
+		 * 		fields: list of objects that map field names of the class to the corresponding database colums.
 		 */
 		private var map:Object = new Object();
 		

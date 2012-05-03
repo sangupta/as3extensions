@@ -25,11 +25,14 @@ package com.sangupta.as3extensions {
 	 * Interface enforcing contract that the implementing object can be
 	 * disposed off to release resources.
 	 * 
-	 * @author Sandeep Gupta
+	 * @author sangupta
 	 * @since 1.0
 	 */
 	public interface IDisposable {
 		
+		/**
+		 * Dispose of the current object releasing all held references and listeners.
+		 */
 		function dispose():void;
 		
 	}

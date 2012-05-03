@@ -25,7 +25,7 @@ package com.sangupta.as3extensions.model {
 	 * A utility holding class to store key value pairs, where keys
 	 * are <code>String</code> objetcs and values are <code>variants</code>.
 	 * 
-	 * @author Sandeep Gupta
+	 * @author sangupta
 	 * @since 1.0
 	 */
 	public class KeyValuePair {

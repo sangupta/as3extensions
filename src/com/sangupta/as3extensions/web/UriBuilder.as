@@ -29,6 +29,8 @@ package com.sangupta.as3extensions.web {
 	 * 
 	 * Use <code>fromUri()</code> to convert an exisitng URL into a builder object.
 	 * 
+	 * @author sangupta
+	 * @since 1.0
 	 */
 	public class UriBuilder {
 		

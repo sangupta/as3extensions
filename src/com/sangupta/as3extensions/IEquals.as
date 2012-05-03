@@ -25,7 +25,7 @@ package com.sangupta.as3extensions {
 	 * Interface enforcing contract that the implementing object provides an
 	 * implementation to be tested for equality.
 	 * 
-	 * @author Sandeep Gupta
+	 * @author sangupta
 	 * @since 1.0
 	 */
 	public interface IEquals {

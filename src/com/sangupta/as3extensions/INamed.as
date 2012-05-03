@@ -25,13 +25,23 @@ package com.sangupta.as3extensions {
 	 * Interface enforcing contract that the implementing object has a name
 	 * which can be set and retrieved.
 	 * 
-	 * @author Sandeep Gupta
+	 * @author sangupta
 	 * @since 1.0
 	 */
 	public interface INamed {
 		
+		/**
+		 * Return the name of the current object
+		 * 
+		 * @return String representing the name of the object
+		 */
 		function get name():String;
 		
+		/**
+		 * Set the name of the object to the given value
+		 * 
+		 * @param value the new name for this object
+		 */
 		function set name(value:String):void;
 		
 	}
