@@ -1,3 +1,6 @@
+as3extensions
+-------------
+
 Extension classes for Adobe AIR desktop applications. Project contains several classes that enhance the basic functionality of ActionScript and makes it easier to use. These classes are meant to reduce a lot of boiler-plate code that a user may need to write in order to achieve simple tasks.
 
 The entire library can be categorized into the following:
